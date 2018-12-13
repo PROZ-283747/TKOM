@@ -1,0 +1,27 @@
+# KOMENTARZ Language with type fraction
+# eg. 4%7
+
+void print(string s, fraction f){}
+
+int main(){
+fraction contener[5] = {4%5, 6%7, 2%9, 3%4,7%2};
+fraction sum = 0;
+for(each i : contener){
+sum = sum + i;
+}
+fraction a = 1;
+while(a > 1%16){
+a = a*a;
+}
+print('Value of a: ', a );
+fraction b = 10;
+while(b<12) {
+if (b / 5 + 9%3 > 4) {
+b=b-3;
+} else {
+b = 14;
+}
+}
+print('Value of b: ', b);
+return 0;
+}

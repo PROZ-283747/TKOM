@@ -1,0 +1,3 @@
+F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/edit_cache.dir
+F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/TKOM.dir
+F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/rebuild_cache.dir
