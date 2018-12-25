@@ -14,10 +14,10 @@ private:
     FileReader fileReader;
     const Token handleError(const Token &token, std::string errorMsg);
     bool isEndOfFile();
-    bool skippedWhiteCharOrComments();
-    bool isDigit(char sign);
-    bool isAlpha(char sign);
-
+    bool skipUnrelevant();
+    bool createDigit();
+    bool createString();
+    bool createIdentifier();
 
 
 public:

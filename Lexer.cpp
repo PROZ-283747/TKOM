@@ -18,6 +18,10 @@ void printToken(const Token &token){
     std::cout<< "TOKEN: "<< " type: " << token.type << " value: \""<< token.value << "\" line:  " << token.line << " poss: " << token.positionInLine << std::endl;
 }
 
+void skipUnrelevant(){
+
+}
+
 Token Lexer::nextToken() {
     Token token; // token to return  // powołać dożycia kiedy już wiem ze jest, ze dałos ie zbudować; lekser ma trzymć token bo potem bedzie go pobierał parser
     // przy wejsciu do tej funkcji ma być znak już pobrany ale jeszecze nie przetworzony, a na wyjsciu on ma byc ustawiony na pierwszej pozycji tokenu
@@ -31,8 +35,8 @@ Token Lexer::nextToken() {
         // zwracać true jesli pominięte
     }
     // sets the position of beginning of currently analyzed token
-    token.line = this->fileReader.lineNumber;
-    token.positionInLine = this->fileReader.currentSignPos - 1;
+    token.line = this->fileReader.getLineNumber();
+    token.positionInLine = this->fileReader.getCurrentSignPos() - 1;
 
     // returns token EOF if it is end of file
     if (sign == EOF) {
@@ -61,7 +65,6 @@ Token Lexer::nextToken() {
         }
         fileReader.rewind();
     }
-
     else if(isdigit(sign)){
         // funkcja
         // TODO: spróbuj zbudować()
@@ -72,7 +75,7 @@ Token Lexer::nextToken() {
             buffer.push_back(sign);
             sign = this->fileReader.getNextChar();
         } while (isdigit(sign));
-        if(sign == '%' && isdigit(fileReader.getPeek())) {
+        if(sign == '%' && isdigit(fileReader.peek())) {
             buffer.push_back(sign);
             sign = this->fileReader.getNextChar();
         }
@@ -257,7 +260,6 @@ Token Lexer::nextToken() {
 
     printToken(token);
     return token;
-
 
 }
 

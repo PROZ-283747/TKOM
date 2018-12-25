@@ -9,45 +9,73 @@ FileReader::FileReader(const std::string &fileName) : handler("../" +fileName, s
     }
 }
 
-const char FileReader::getNextChar()
+const void FileReader::getNextChar()
 {
     // EOF zamienić na end of text ETX
-    char sign; // powinien być polem w klasie zeby wilokrotnie sie odwoływać do niego
 
-        sign = this->handler.get();
+        this->sign = this->handler.get();
         if (sign == '\n' || sign == '\r')
         {
             this->lineNumber++;
             this->currentSignPos = 0;
         }
-
-        this->prevChar = sign;
+        this->prevSign = sign;
         this->currentSignPos++;
-
-        return sign;
 }
 
 void FileReader::rewind() {
 
     this->handler.unget().unget();
-    this->prevChar = this->handler.get();
+    this->prevSign = this->handler.get();
     auto peek = this->handler.peek();
 
     if (peek == '\n' || peek == '\r')
     {
-        this->prevChar = this->handler.get();
+        this->prevSign = this->handler.get();
         return;
     }
     this->currentSignPos--;
 }
 
 //  Returns the next character in the input sequence, without extracting it.
-int FileReader::getPeek() {
+int FileReader::peek() {
     return handler.peek();
 }
 
 
-const bool FileReader::isEndOfFile()
-{
+const bool FileReader::isEndOfFile() {
     return this->handler.eof();
 }
+
+void FileReader::setSign(char sign) {
+    FileReader::sign = sign;
+}
+
+char FileReader::getSign() const {
+    return sign;
+}
+
+char FileReader::getPrevSign() const {
+    return prevSign;
+}
+
+unsigned int FileReader::getLineNumber() const {
+    return lineNumber;
+}
+
+unsigned int FileReader::getCurrentSignPos() const {
+    return currentSignPos;
+}
+
+void FileReader::setPrevSign(char prevSign) {
+    FileReader::prevSign = prevSign;
+}
+
+void FileReader::setLineNumber(unsigned int lineNumber) {
+    FileReader::lineNumber = lineNumber;
+}
+
+void FileReader::setCurrentSignPos(unsigned int currentSignPos) {
+    FileReader::currentSignPos = currentSignPos;
+}
+
