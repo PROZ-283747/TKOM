@@ -5,6 +5,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
   "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/FileReader.cpp" "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/TKOM.dir/FileReader.cpp.obj"
+  "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.cpp" "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/TKOM.dir/Fraction.cpp.obj"
   "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Lexer.cpp" "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/TKOM.dir/Lexer.cpp.obj"
   "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/main.cpp" "F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/cmake-build-debug/CMakeFiles/TKOM.dir/main.cpp.obj"
   )

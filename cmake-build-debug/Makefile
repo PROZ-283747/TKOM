@@ -149,6 +149,33 @@ FileReader.cpp.s:
 	$(MAKE) -f CMakeFiles\TKOM.dir\build.make CMakeFiles/TKOM.dir/FileReader.cpp.s
 .PHONY : FileReader.cpp.s
 
+Fraction.obj: Fraction.cpp.obj
+
+.PHONY : Fraction.obj
+
+# target to build an object file
+Fraction.cpp.obj:
+	$(MAKE) -f CMakeFiles\TKOM.dir\build.make CMakeFiles/TKOM.dir/Fraction.cpp.obj
+.PHONY : Fraction.cpp.obj
+
+Fraction.i: Fraction.cpp.i
+
+.PHONY : Fraction.i
+
+# target to preprocess a source file
+Fraction.cpp.i:
+	$(MAKE) -f CMakeFiles\TKOM.dir\build.make CMakeFiles/TKOM.dir/Fraction.cpp.i
+.PHONY : Fraction.cpp.i
+
+Fraction.s: Fraction.cpp.s
+
+.PHONY : Fraction.s
+
+# target to generate assembly for a file
+Fraction.cpp.s:
+	$(MAKE) -f CMakeFiles\TKOM.dir\build.make CMakeFiles/TKOM.dir/Fraction.cpp.s
+.PHONY : Fraction.cpp.s
+
 Lexer.obj: Lexer.cpp.obj
 
 .PHONY : Lexer.obj
@@ -215,6 +242,9 @@ help:
 	@echo ... FileReader.obj
 	@echo ... FileReader.i
 	@echo ... FileReader.s
+	@echo ... Fraction.obj
+	@echo ... Fraction.i
+	@echo ... Fraction.s
 	@echo ... Lexer.obj
 	@echo ... Lexer.i
 	@echo ... Lexer.s

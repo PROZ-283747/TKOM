@@ -10,7 +10,7 @@ int main() {
     std::cout << "Enter file name: ";
     std::cin >> fileName;
 
-    Lexer  lekser(fileName);
+    Lexer lekser(fileName);
     Token token;
 
     do{

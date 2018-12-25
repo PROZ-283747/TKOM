@@ -16,8 +16,6 @@ public:
         std::cout<< "Error in: "<< module << " : " << errorMsg << " line: "<< token.line << " pos: "<< token.positionInLine <<std::endl;
         std::cout<< "*************************"<<std::endl;
     }
-private:
-
 
 };
 #endif //TKOM_ERRORHANDLER_H

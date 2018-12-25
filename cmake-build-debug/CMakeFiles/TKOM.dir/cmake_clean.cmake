@@ -2,6 +2,7 @@ file(REMOVE_RECURSE
   "CMakeFiles/TKOM.dir/main.cpp.obj"
   "CMakeFiles/TKOM.dir/FileReader.cpp.obj"
   "CMakeFiles/TKOM.dir/Lexer.cpp.obj"
+  "CMakeFiles/TKOM.dir/Fraction.cpp.obj"
   "TKOM.pdb"
   "TKOM.exe"
   "TKOM.exe.manifest"

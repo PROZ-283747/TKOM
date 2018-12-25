@@ -14,12 +14,6 @@ iostream
 Token.h
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Token.h
 
-F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/FileReader.cpp
-iostream
--
-FileReader.h
-F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/FileReader.h
-
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/FileReader.h
 string
 -
@@ -27,6 +21,8 @@ fstream
 -
 iostream
 -
+
+F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.h
 
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Lexer.cpp
 winnt.h
@@ -53,6 +49,8 @@ iostream
 -
 TokenType.h
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/TokenType.h
+Fraction.h
+F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.h
 
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/TokenType.h
 unordered_map

@@ -9,6 +9,7 @@
 
 class FileReader {
 public:
+    char sign; // last sign read by FileReader
     unsigned int lineNumber = 1;
     unsigned int currentSignPos = 0;
 

@@ -13,7 +13,15 @@ class Lexer {
 private:
     FileReader fileReader;
     const Token handleError(const Token &token, std::string errorMsg);
+    bool isEndOfFile();
+    bool skippedWhiteCharOrComments();
+    bool isDigit(char sign);
+    bool isAlpha(char sign);
+
+
+
 public:
+    Token *token; // last created token to take by parser
     Lexer(const std::string &fileName);
     Token nextToken();
 };

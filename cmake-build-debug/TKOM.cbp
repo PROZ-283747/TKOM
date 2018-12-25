@@ -91,6 +91,12 @@
 		<Unit filename="F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/FileReader.h">
 			<Option target="TKOM"/>
 		</Unit>
+		<Unit filename="F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.cpp">
+			<Option target="TKOM"/>
+		</Unit>
+		<Unit filename="F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.h">
+			<Option target="TKOM"/>
+		</Unit>
 		<Unit filename="F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Lexer.cpp">
 			<Option target="TKOM"/>
 		</Unit>

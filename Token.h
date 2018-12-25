@@ -6,22 +6,21 @@
 #include <string>
 #include <iostream>
 #include "TokenType.h"
+#include "Fraction.h"
 
 using namespace token;
 
-class Token {
-public:
-    Token(const Type& t) : type(t){}
+struct Token {
+    // dodać pole numeryczne unie:string i typ numeryczny : fraction to klasa
+    // TODO // unique pointer ! lub zwracać wskaźnik na token i przekazać wskaźnik
     Token(){}
 
     Type type;
     std::string value ="";
+    //Fraction fraction;
     unsigned int line = 0;
     unsigned int positionInLine = 0;
 
-    void printToken(){
-        std::cout<< "TOKEN: "<< " type: " << type << " value: \""<< value << "\" line:  " << line << " poss: " << positionInLine << std::endl;
-    }
 };
-
+// Token jako struktura, albo classe i ustawić settery i gettery; prontToken to gdzieś indziej, zeby nie narzucac sposobu drukowania tokenu.
 #endif //TKOM_TOKEN_H

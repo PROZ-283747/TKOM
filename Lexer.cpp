@@ -13,29 +13,38 @@ const Token Lexer::handleError(const Token &token, std::string errorMsg) {
     return this->nextToken();
 }
 
-Token Lexer::nextToken() {
-    Token token; // token to return
+// for testing purposes -> to delete
+void printToken(const Token &token){
+    std::cout<< "TOKEN: "<< " type: " << token.type << " value: \""<< token.value << "\" line:  " << token.line << " poss: " << token.positionInLine << std::endl;
+}
 
+Token Lexer::nextToken() {
+    Token token; // token to return  // powołać dożycia kiedy już wiem ze jest, ze dałos ie zbudować; lekser ma trzymć token bo potem bedzie go pobierał parser
+    // przy wejsciu do tej funkcji ma być znak już pobrany ale jeszecze nie przetworzony, a na wyjsciu on ma byc ustawiony na pierwszej pozycji tokenu
     auto sign= this->fileReader.getNextChar(); // Loads new character from file reader to analyze and to create token.
     char nextChar;
 
     while (isspace(sign)) // Skips all white characters (spaces).
     {
+        // tu pomijać komentarze
         sign = this->fileReader.getNextChar();
+        // zwracać true jesli pominięte
     }
     // sets the position of beginning of currently analyzed token
     token.line = this->fileReader.lineNumber;
     token.positionInLine = this->fileReader.currentSignPos - 1;
 
     // returns token EOF if it is end of file
-    if (this->fileReader.isEndOfFile()) {
+    if (sign == EOF) {
+        std::cout<<"end" <<std::endl;
         token.type = Type::END_OF_FILE;
         token.value = "EndOfFile";
-        token.printToken();
-        return token;
+        printToken(token);
+        return token; // tu tworzyć token - konstruktorem
     }
 
     if(isalpha(sign)){
+        // to mozna obudować w funkcje gdy sign bedzie w Readerze
         std::string buffer;
 
         do{
@@ -50,23 +59,29 @@ Token Lexer::nextToken() {
             token.type = Type::IDENTIFIER;
             token.value = buffer;
         }
+        fileReader.rewind();
     }
 
     else if(isdigit(sign)){
+        // funkcja
+        // TODO: spróbuj zbudować()
+        // lub tabela ze znakami z podpiętymi funkcjami spróbuj()
         std::string buffer;
         do
         {
             buffer.push_back(sign);
             sign = this->fileReader.getNextChar();
         } while (isdigit(sign));
-        if(sign == '%' && isdigit(fileReader.getPeek())){
-            do{
-                buffer.push_back(sign);
-                sign = this->fileReader.getNextChar();
-            }
-            while(isdigit(sign));
-            this->fileReader.rewind();
+        if(sign == '%' && isdigit(fileReader.getPeek())) {
+            buffer.push_back(sign);
+            sign = this->fileReader.getNextChar();
         }
+        do{
+            buffer.push_back(sign);
+            sign = this->fileReader.getNextChar();
+        }
+        while(isdigit(sign));
+        fileReader.rewind();
         token.type = Type::NUMBER;
         token.value = buffer;
     }
@@ -74,7 +89,7 @@ Token Lexer::nextToken() {
         switch (sign) {
             case ' ' :
 
-            case '\r' :
+            case '\r' : // chyba liczone jako białe znaki
 
             case '\t' :
                 break;
@@ -83,20 +98,21 @@ Token Lexer::nextToken() {
                 ++token.line;
                 break;
 
-            case '#' : {
-                std::string buffer;
-                token.type = Type::COMMENT;
-                do {
-                    buffer.push_back(sign);
-                    sign = this->fileReader.getNextChar();
-                } while (sign != '\n');
-
-                token.value = buffer;
-                this->fileReader.rewind();
-                break;
-            }
+//            case '#' : { // można pomijać, obsługiwać tm gdzie białe znaki
+//                std::string buffer;
+//                token.type = Type::COMMENT;
+//                do {
+//                    buffer.push_back(sign);
+//                    sign = this->fileReader.getNextChar();
+//                } while (sign != '\n');
+//
+//                token.value = buffer;
+//                this->fileReader.rewind();
+//                break;
+//            }
             case'\'' :
             {
+                //funkcja
                 std::string buffer;
                 token.type = Type::STRING;
                 do {
@@ -165,6 +181,7 @@ Token Lexer::nextToken() {
                 break;
 
             case '=':
+                // jak dołączłam do tokena to pobieram kolejny w readerze a jak nie to zostaje
                 if (this->fileReader.getNextChar() == '=') {
                     token.type = Type::EQUAL;
                     token.value = "==";
@@ -224,6 +241,7 @@ Token Lexer::nextToken() {
 
             default:
             {
+                //std::cout<<"default: " <<std::endl;
                 if (singleSigns.find(sign) != singleSigns.end()) {
                     token.type = singleSigns.at(sign);
                     token.value = sign;
@@ -237,7 +255,7 @@ Token Lexer::nextToken() {
         }
     }
 
-    token.printToken();
+    printToken(token);
     return token;
 
 

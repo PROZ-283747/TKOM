@@ -11,10 +11,9 @@ FileReader::FileReader(const std::string &fileName) : handler("../" +fileName, s
 
 const char FileReader::getNextChar()
 {
-    char sign;
+    // EOF zamienić na end of text ETX
+    char sign; // powinien być polem w klasie zeby wilokrotnie sie odwoływać do niego
 
-    while (true)
-    {
         sign = this->handler.get();
         if (sign == '\n' || sign == '\r')
         {
@@ -26,7 +25,6 @@ const char FileReader::getNextChar()
         this->currentSignPos++;
 
         return sign;
-    }
 }
 
 void FileReader::rewind() {
