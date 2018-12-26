@@ -11,7 +11,7 @@ class FileReader {
 public:
 
     FileReader(const std::string &fileName);
-    const void getNextChar();
+    const char getNextChar();
     void rewind();
     const bool isEndOfFile();
     int peek();

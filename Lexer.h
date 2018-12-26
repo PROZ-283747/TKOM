@@ -12,12 +12,14 @@ class Lexer {
 
 private:
     FileReader fileReader;
-    const Token handleError(const Token &token, std::string errorMsg);
+    const void handleError(const Token &token, std::string errorMsg);
     bool isEndOfFile();
-    bool skipUnrelevant();
-    bool createDigit();
-    bool createString();
-    bool createIdentifier();
+    void createEndOfFile();
+    void skipUnrelevant();
+    void createDigit();
+    void createString();
+    void createIdentifier();
+    void createSignToken();
 
 
 public:
