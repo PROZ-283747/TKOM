@@ -21,6 +21,8 @@ Fraction::Fraction(std::string value){
     }
 }
 
+Fraction::~Fraction() {}
+
 int Fraction::getNominator() const {
     return nominator;
 }

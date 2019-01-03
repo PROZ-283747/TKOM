@@ -11,17 +11,16 @@
 using namespace token;
 
 struct Token {
-    // dodać pole numeryczne unie:string i typ numeryczny : fraction to klasa
-    // TODO // unique pointer ! lub zwracać wskaźnik na token i przekazać wskaźnik
-
     Type type;
     union{
-        std::string stringValue;
+        std::string stringValue = "";
         Fraction fraction;
     };
     unsigned int line = 0;
     unsigned int positionInLine = 0;
 
+    ~Token() {}
+    //Token(const Type& type,  std::string &val, unsigned int line, unsigned int pos) : type(type), stringValue(val), line(line), positionInLine(pos)  {}
     Token(Type type, std::string value, unsigned int line, unsigned int posLine) {
         this->type = type;
         stringValue = value;
@@ -29,6 +28,8 @@ struct Token {
         this->positionInLine = posLine;
         if(type == NUMBER){
             fraction = Fraction(value);
+            std::cout<<"Nominator: "<<fraction.getNominator()<<std::endl;
+            std::cout<<"Denominator: "<<fraction.getDenominator()<<std::endl;
         }
     }
 

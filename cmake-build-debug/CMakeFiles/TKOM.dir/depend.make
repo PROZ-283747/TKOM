@@ -5,6 +5,7 @@ CMakeFiles/TKOM.dir/FileReader.cpp.obj: ../FileReader.cpp
 CMakeFiles/TKOM.dir/FileReader.cpp.obj: ../FileReader.h
 
 CMakeFiles/TKOM.dir/Fraction.cpp.obj: ../Fraction.cpp
+CMakeFiles/TKOM.dir/Fraction.cpp.obj: ../Fraction.h
 
 CMakeFiles/TKOM.dir/Lexer.cpp.obj: ../ErrorHandler.h
 CMakeFiles/TKOM.dir/Lexer.cpp.obj: ../FileReader.h

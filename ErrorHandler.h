@@ -5,15 +5,16 @@
 
 #include <string>
 #include <iostream>
+#include <memory>
 #include "Token.h"
 
 class ErrorHandler{
 public:
     ErrorHandler(){}
     ~ErrorHandler(){}
-    void printError(std::string module, const Token &token, std::string errorMsg){
+    void printError(std::string module, unsigned int line, unsigned int pos, std::string errorMsg){
         std::cout<< "*************************"<<std::endl;
-        std::cout<< "Error in: "<< module << " : " << errorMsg << " line: "<< token.line << " pos: "<< token.positionInLine <<std::endl;
+        std::cout<< "Error in: "<< module << " : " << errorMsg << " line: "<< line << " pos: "<< pos <<std::endl;
         std::cout<< "*************************"<<std::endl;
     }
 

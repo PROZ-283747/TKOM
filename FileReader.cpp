@@ -12,16 +12,17 @@ FileReader::FileReader(const std::string &fileName) : handler("../" +fileName, s
 const char FileReader::getNextChar()
 {
     // EOF zamienić na end of text ETX
-
         this->sign = this->handler.get();
         if (sign == '\n' || sign == '\r')
         {
             this->lineNumber++;
-            this->currentSignPos = 0;
+            this->currentSignPos = -1;
+            std::cout<<"nowe linia"<<std::endl;
         }
         this->prevSign = sign;
         this->currentSignPos++;
-
+        std::cout<<"Sign: "<< sign <<std::endl;
+        std::cout<<"Pos: "<< currentSignPos <<std::endl;
         return sign;
 }
 
@@ -43,7 +44,6 @@ void FileReader::rewind() {
 int FileReader::peek() {
     return handler.peek();
 }
-
 
 const bool FileReader::isEndOfFile() {
     return this->handler.eof();

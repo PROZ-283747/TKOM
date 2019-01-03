@@ -11,6 +11,8 @@ string
 -
 iostream
 -
+memory
+-
 Token.h
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Token.h
 
@@ -23,6 +25,8 @@ iostream
 -
 
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Fraction.h
+string
+-
 
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Lexer.cpp
 winnt.h
@@ -34,6 +38,8 @@ F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/ErrorHandler.h
 
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Lexer.h
 string
+-
+memory
 -
 Token.h
 F:/ADELA/STUDIA/SEM_5/TKOM/PROJEKT/TKOM/Token.h

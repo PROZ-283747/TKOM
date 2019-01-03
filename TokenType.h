@@ -132,8 +132,8 @@ namespace token {
             { ':', COLON },
             { ';', SEMICOLON },
             { '\'', APOSTROPHE },
-            { '*', SLASH },
-            { '/', STAR },
+            { '/', SLASH },
+            { '*', STAR },
             { '#', HASH }
     };
 

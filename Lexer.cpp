@@ -7,48 +7,50 @@
 
 Lexer::Lexer(const std::string &fileName) : fileReader(fileName){}
 
-const void Lexer::handleError(const Token &token, std::string errorMsg) {
-    ErrorHandler errorHandler;
-    errorHandler.printError("LEXER", token, errorMsg);
+const void Lexer::handleError(unsigned int line, unsigned int pos, std::string errorMsg) {
+    ErrorHandler errorHandler = ErrorHandler();
+    errorHandler.printError("LEXER", line, pos, errorMsg);
 }
 
 // for testing purposes -> to delete
-void printToken(const Token &token){
-    std::cout<< "TOKEN: "<< " type: " << token.type << " value: \""<< token.stringValue << "\" line:  " << token.line << " poss: " << token.positionInLine << std::endl;
+void printToken(std::unique_ptr<Token> const &token){
+    std::cout<< "TOKEN: "<< " type: " << token->type << " value: \""<< token->stringValue << "\" line:  " << token->line << " poss: " << token->positionInLine << std::endl;
 }
 
 bool Lexer::isEndOfFile(){
     return fileReader.getSign() == EOF;
 }
 
-void Lexer::createEndOfFile(){
-    Token newToken = Token(Type::END_OF_FILE, "End of file", line, posInLine); // TODO position
-    token = &newToken;
+std::unique_ptr<Token> Lexer::createEndOfFile(unsigned int line, unsigned int posInLine){
+    std::cout<<"create end of file"<<std::endl;
+    tokenPtr = std::make_unique<Token>(Type::END_OF_FILE, "End of file", line, posInLine);
+    return std::make_unique<Token>(Type::END_OF_FILE, "End of file", line, posInLine);
 }
 
 void Lexer::skipUnrelevant(){
+    std::cout<<"Skip unrelevant"<<std::endl;
     while(true) {
-        char c = this->fileReader.peek();
-        while (isspace(c)){ // Skips all white characters (spaces).
-            this->fileReader.getNextChar();
+        auto c = this->fileReader.getNextChar();
+        while(isspace(c)){
+            c = this -> fileReader.getNextChar();
         }
         switch(c){
             case '\r':
             case '\t':
-                fileReader.getNextChar();
                 break;
             case '#': // Skips comments.
                 while(fileReader.peek() != '\n' && fileReader.peek() != EOF)
                     fileReader.getNextChar();
-                    break;
+                break;
             default:
                 return;
         }
     }
 }
 
-void Lexer::createDigit(){
-    char c = this->fileReader.getSign();
+std::unique_ptr<Token> Lexer::createDigit(unsigned int line, unsigned int posInLine){
+    std::cout<<"createDigit"<<std::endl;
+    auto c = this->fileReader.getSign();
     std::string buffer;
     do {
         buffer.push_back(c);
@@ -61,28 +63,35 @@ void Lexer::createDigit(){
         }
         while(isdigit(c));
     }
-    Token newToken = Token(Type::NUMBER, buffer, line, posInLine); // TODO position
-    token = &newToken;
+    fileReader.rewind();
+
+    tokenPtr = std::make_unique<Token>(Type::NUMBER, buffer.c_str(), line, posInLine);
+    return std::make_unique<Token>(Type::NUMBER, buffer.c_str(), line, posInLine);
 }
 
-void Lexer::createIdentifier() {
-    char c = this->fileReader.getSign();
+std::unique_ptr<Token> Lexer::createIdentifier(unsigned int line, unsigned int posInLine) {
+    std::cout<<"createIdentifier"<<std::endl;
+    auto c = this->fileReader.getSign();
     std::string buffer;
     do{
         buffer.push_back(c);
         c = this->fileReader.getNextChar();
     }while(isalnum(c));
+
+    fileReader.rewind();
+
     if (keyWords.find(buffer) != keyWords.end()) {
-        Token newToken = Token(keyWords.find(buffer)->second, buffer, line, posInLine); // TODO position
-        token = &newToken;
+        tokenPtr = std::make_unique<Token>(keyWords.find(buffer)->second, buffer, line, posInLine);
+        return std::make_unique<Token>(keyWords.find(buffer)->second, buffer, line, posInLine);
     } else {
-        Token newToken = Token(Type::IDENTIFIER, buffer, line, posInLine); // TODO position
-        token = &newToken;
+        tokenPtr = std::make_unique<Token>(Type::IDENTIFIER, buffer, line, posInLine);
+        return std::make_unique<Token>(Type::IDENTIFIER, buffer, line, posInLine);
     }
 }
 
-void Lexer::createString() {
-    char c = this->fileReader.getSign();
+std::unique_ptr<Token> Lexer::createString(unsigned int line, unsigned int posInLine) {
+    std::cout<<"createString"<<std::endl;
+    auto c = this->fileReader.getSign();
     std::string buffer;
     do {
         buffer.push_back(c);
@@ -91,383 +100,152 @@ void Lexer::createString() {
             buffer.push_back(c);
         }
         else if(c =='\n' || fileReader.isEndOfFile()){
-            Token newToken = Token(Type::ERROR, "Error", line, posInLine); // TODO
-            handleError(newToken, "You forgotten to close the string. ");
-            break;
+            tokenPtr = std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
+            handleError(tokenPtr->line, tokenPtr->positionInLine, "You forgotten to close the string. ");
+            return std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
         }
-        else if(c== '\'') {
-            Token newToken = Token(Type::STRING, buffer, line, posInLine); // TODO
-            token = &newToken;
-            break;
+        else if(c == '\'') {
+            tokenPtr = std::make_unique<Token>(Type::STRING, buffer, line, posInLine);
+            return std::make_unique<Token>(Type::STRING, buffer, line, posInLine);
         }
     }while(1);
 }
 
-void Lexer::createSignToken(){
-
-    char c = fileReader.getSign();
-    unsigned int line = fileReader.getLineNumber();
-    unsigned int posInLine = fileReader.getLineNumber();
-
-    switch (fileReader.getSign()) {
+std::unique_ptr<Token> Lexer::createSignToken(unsigned int line, unsigned int posInLine){
+    std::cout<<"createTokenSign"<<std::endl;
+    auto c = fileReader.getSign();
+    auto nextChar = 0;
+    std::cout<<"********przed switch"<<std::endl;
+    switch (c) {
         case '&' :
             if (this->fileReader.getNextChar() == '&') {
-                Token *newToken = new Token(Type::AND, "&&", line, posInLine); // TODO
-                token = newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::AND, "&&", line, posInLine);
+                return std::make_unique<Token>(Type::AND, "&&", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::ERROR, "Error", line, posInLine); // TODO
-                handleError(newToken, "Unexpected symbol. ");
+                tokenPtr = std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
+                handleError(tokenPtr->line, tokenPtr->positionInLine, "Unexpected symbol."); // TODO
+                return std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
             }
-            break;
+
         case '|':
             if (this->fileReader.getNextChar() == '|') {
-                Token newToken = Token(Type::OR, "||", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else
-            {
+                tokenPtr = std::make_unique<Token>(Type::OR, "||", line, posInLine);
+                return std::make_unique<Token>(Type::OR, "||", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::ERROR, "Error", line, posInLine); // TODO
-                handleError(newToken, "Unexpected symbol. ");
+                tokenPtr = std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
+                handleError(tokenPtr->line, tokenPtr->positionInLine, "Unexpected symbol.");
+                return std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
             }
-            break;
+
         case '<':
             if (this->fileReader.getNextChar() == '=') {
-                Token newToken = Token(Type::LESS_EQUAL, "<=", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::LESS_EQUAL, "<=", line, posInLine);
+                return std::make_unique<Token>(Type::LESS_EQUAL, "<=", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::LESS, "<", line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(Type::LESS, "<", line, posInLine);
+                return std::make_unique<Token>(Type::LESS, "<", line, posInLine);
             }
-            break;
 
         case '>':
             if (this->fileReader.getNextChar() == '=') {
-                Token newToken = Token(Type::GREATER_EQUAL, ">=", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::GREATER_EQUAL, ">=", line, posInLine);
+                return std::make_unique<Token>(Type::GREATER_EQUAL, ">=", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::GREATER, ">", line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(Type::GREATER, ">", line, posInLine);
+                return std::make_unique<Token>(Type::GREATER, ">", line, posInLine);
             }
-            break;
 
         case '=':
-            // jak dołączłam do tokena to pobieram kolejny w readerze a jak nie to zostaje
             if (this->fileReader.getNextChar() == '=') {
-                Token newToken = Token(Type::EQUAL, "==", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::EQUAL, "==", line, posInLine);
+                return std::make_unique<Token>(Type::EQUAL, "==", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::ASSIGNMENT, "=", line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(Type::ASSIGNMENT, "=", line, posInLine);
+                return std::make_unique<Token>(Type::ASSIGNMENT, "=", line, posInLine);
             }
-            break;
 
         case '!':
             if (this->fileReader.getNextChar() == '=') {
-                Token newToken = Token(Type::BANG_EQUAL, "!=", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::BANG_EQUAL, "!=", line, posInLine);
+                return std::make_unique<Token>(Type::BANG_EQUAL, "!=", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::ERROR, "Error", line, posInLine); // TODO
-                handleError(newToken, "Unexpected symbol. ");
+                tokenPtr = std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
+                handleError(tokenPtr->line, tokenPtr->positionInLine, "Unexpected symbol.");
+                return std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
             }
-            break;
 
         case '+':
             nextChar = this->fileReader.getNextChar();
             if (nextChar == '+') {
-                Token newToken = Token(Type::INCREMENTATION, "++", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else if(nextChar == '=') {
-                Token newToken = Token(Type::PLUS_EQUAL, "+=", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::INCREMENTATION, "++", line, posInLine);
+                return std::make_unique<Token>(Type::INCREMENTATION, "++", line, posInLine);
+            } else if (nextChar == '=') {
+                tokenPtr = std::make_unique<Token>(Type::PLUS_EQUAL, "+=", line, posInLine);
+                return std::make_unique<Token>(Type::PLUS_EQUAL, "+=", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::PLUS, "+", line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(Type::PLUS, "+", line, posInLine);
+                return std::make_unique<Token>(Type::PLUS, "+", line, posInLine);
             }
-            break;
 
         case '-':
             nextChar = this->fileReader.getNextChar();
             if (nextChar == '-') {
-                Token newToken = Token(Type::DECREMENTATION, "--", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else if (nextChar == '=') {
-                Token newToken = Token(Type::MINUS_EQUAL, "-=", line, posInLine); // TODO
-                token = &newToken;
-            }
-            else {
+                tokenPtr = std::make_unique<Token>(Type::DECREMENTATION, "--", line, posInLine);
+                return std::make_unique<Token>(Type::DECREMENTATION, "--", line, posInLine);
+            } else if (nextChar == '=') {
+                tokenPtr = std::make_unique<Token>(Type::MINUS_EQUAL, "-=", line, posInLine);
+                return std::make_unique<Token>(Type::MINUS_EQUAL, "-=", line, posInLine);
+            } else {
                 this->fileReader.rewind();
-                Token newToken = Token(Type::MINUS, "-", line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(Type::MINUS, "-", line, posInLine);
+                return std::make_unique<Token>(Type::MINUS, "-", line, posInLine);
             }
+        case '\'':
+            createString(line, posInLine);
             break;
-
-        default:
-        {
-            //std::cout<<"default: " <<std::endl;
+        default: {
+            std::cout<<"*****default"<<std::endl;
             if (singleSigns.find(c) != singleSigns.end()) {
-                Token newToken = Token(singleSigns.at(c), c, line, posInLine); // TODO
-                token = &newToken;
+                tokenPtr = std::make_unique<Token>(singleSigns.at(c), std::string(1,c), line, posInLine);
+                return std::make_unique<Token>(singleSigns.at(c), std::string(1,c), line, posInLine);
+            } else {
+                tokenPtr = std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
+                handleError(tokenPtr->line, tokenPtr->positionInLine, "Unexpected symbol.");
+                return std::make_unique<Token>(Type::ERROR, "Error", line, posInLine);
             }
-            else
-            {
-                Token newToken = Token(Type::ERROR, "Error", line, posInLine); // TODO
-                handleError(newToken, "Unexpected symbol. ");
-            }
+        }
+    }
 }
 
-//Token Lexer::nextToken() {
-//    //Token token; // token to return  // powołać dożycia kiedy już wiem ze jest, ze dałos ie zbudować; lekser ma trzymć token bo potem bedzie go pobierał parser
-//    // przy wejsciu do tej funkcji ma być znak już pobrany ale jeszecze nie przetworzony, a na wyjsciu on ma byc ustawiony na pierwszej pozycji tokenu
-//    //auto sign= this->fileReader.getNextChar(); // Loads new character from file reader to analyze and to create token.
-//    //char nextChar;
-//
-////    while (isspace(sign)) // Skips all white characters (spaces).
-////    {
-////        // tu pomijać komentarze
-////        sign = this->fileReader.getNextChar();
-////        // zwracać true jesli pominięte
-////    }
-//    // sets the position of beginning of currently analyzed token
-////    token.line = this->fileReader.getLineNumber();
-////    token.positionInLine = this->fileReader.getCurrentSignPos() - 1;
-//
-//    // returns token EOF if it is end of file
-//    if (sign == EOF) {
-//        std::cout<<"end" <<std::endl;
-//        token.type = Type::END_OF_FILE;
-//        token.value = "EndOfFile";
-//        printToken(token);
-//        return token; // tu tworzyć token - konstruktorem
-//    }
-//
-//    if(isalpha(sign)){
-//        // to mozna obudować w funkcje gdy sign bedzie w Readerze
-//        std::string buffer;
-//
-//        do{
-//            buffer.push_back(sign);
-//            sign = this->fileReader.getNextChar();
-//        }while(isalnum(sign));
-//
-//        if (keyWords.find(buffer) != keyWords.end()) {
-//            token.type = keyWords.find(buffer)->second;
-//            token.value = buffer;
-//        } else {
-//            token.type = Type::IDENTIFIER;
-//            token.value = buffer;
-//        }
-//        fileReader.rewind();
-//    }
-//    else if(isdigit(sign)){
-//        // funkcja
-//        // TODO: spróbuj zbudować()
-//        // lub tabela ze znakami z podpiętymi funkcjami spróbuj()
-//        std::string buffer;
-//        do
-//        {
-//            buffer.push_back(sign);
-//            sign = this->fileReader.getNextChar();
-//        } while (isdigit(sign));
-//        if(sign == '%' && isdigit(fileReader.peek())) {
-//            buffer.push_back(sign);
-//            sign = this->fileReader.getNextChar();
-//        }
-//        do{
-//            buffer.push_back(sign);
-//            sign = this->fileReader.getNextChar();
-//        }
-//        while(isdigit(sign));
-//        fileReader.rewind();
-//        token.type = Type::NUMBER;
-//        token.value = buffer;
-//    }
-//    else {
-//        switch (sign) {
-//            case ' ' :
-//
-//            case '\r' : // chyba liczone jako białe znaki
-//
-//            case '\t' :
-//                break;
-//
-//            case '\n' :
-//                ++token.line;
-//                break;
-//
-////            case '#' : { // można pomijać, obsługiwać tm gdzie białe znaki
-////                std::string buffer;
-////                token.type = Type::COMMENT;
-////                do {
-////                    buffer.push_back(sign);
-////                    sign = this->fileReader.getNextChar();
-////                } while (sign != '\n');
-////
-////                token.value = buffer;
-////                this->fileReader.rewind();
-////                break;
-////            }
-//            case'\'' :
-//            {
-//                //funkcja
-//                std::string buffer;
-//                token.type = Type::STRING;
-//                do {
-//                    sign = this->fileReader.getNextChar();
-//                    if(sign != '\'' && sign != '\n' && !fileReader.isEndOfFile()){
-//                        buffer.push_back(sign);
-//                    }
-//                    else if(sign =='\n' || fileReader.isEndOfFile()){
-//                        token.type = Type::ERROR;
-//                        token = handleError(token,"You forgotten to close the string. ");
-//                        break;
-//                    }
-//                    else if(sign== '\'') {
-//                        token.type = Type::STRING;
-//                        token.value = buffer;
-//                        break;
-//                    }
-//                }while(1);
-//                break;
-//            }
-//            case '&' :
-//                if (this->fileReader.getNextChar() == '&') {
-//                    token.type = Type::AND;
-//                    token.value = "&&";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::ERROR;
-//                    token = handleError( token, "Unexpected symbol. ");
-//                }
-//                break;
-//            case '|':
-//                if (this->fileReader.getNextChar() == '|') {
-//                    token.type = Type::OR;
-//                    token.value = "||";
-//                }
-//                else
-//                {
-//                    this->fileReader.rewind();
-//                    token.type = Type::ERROR;
-//                    token = handleError(token, "Unexpected symbol. ");
-//                }
-//                break;
-//            case '<':
-//                if (this->fileReader.getNextChar() == '=') {
-//                    token.type = Type::LESS_EQUAL;
-//                    token.value = "<=";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::LESS;
-//                    token.value = "<";
-//                }
-//                break;
-//
-//            case '>':
-//                if (this->fileReader.getNextChar() == '=') {
-//                    token.type = Type::GREATER_EQUAL;
-//                    token.value = ">=";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::GREATER;
-//                    token.value = ">";
-//                }
-//                break;
-//
-//            case '=':
-//                // jak dołączłam do tokena to pobieram kolejny w readerze a jak nie to zostaje
-//                if (this->fileReader.getNextChar() == '=') {
-//                    token.type = Type::EQUAL;
-//                    token.value = "==";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::ASSIGNMENT;
-//                    token.value = "=";
-//                }
-//                break;
-//
-//            case '!':
-//                if (this->fileReader.getNextChar() == '=') {
-//                    token.type = Type::BANG_EQUAL;
-//                    token.value = "!=";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::ERROR;
-//                    token = handleError(token, "Unexpected symbol. ");
-//                }
-//                break;
-//
-//            case '+':
-//                nextChar = this->fileReader.getNextChar();
-//                if (nextChar == '+') {
-//                    token.type = Type::INCREMENTATION;
-//                    token.value = "++";
-//                }
-//                else if(nextChar == '=') {
-//                    token.type = Type::PLUS_EQUAL;
-//                    token.value = "+=";
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::PLUS;
-//                    token.value = "+";
-//                }
-//                break;
-//
-//            case '-':
-//                nextChar = this->fileReader.getNextChar();
-//                if (nextChar == '-') {
-//                    token.type = Type::DECREMENTATION;
-//                    token.value;
-//                }
-//                else if (nextChar == '=') {
-//                    token.type = Type::MINUS_EQUAL;
-//                    token.value;
-//                }
-//                else {
-//                    this->fileReader.rewind();
-//                    token.type = Type::MINUS;
-//                    token.value = "-";
-//                }
-//                break;
-//
-//            default:
-//            {
-//                //std::cout<<"default: " <<std::endl;
-//                if (singleSigns.find(sign) != singleSigns.end()) {
-//                    token.type = singleSigns.at(sign);
-//                    token.value = sign;
-//                }
-//                else
-//                {
-//                    token.type = Type::ERROR;
-//                    token = handleError(token, "Unexpected symbol. ");
-//                }
-//            }
-//        }
-//    }
-//
-//    printToken(token);
-//    return token;
-//
-//}
+Token Lexer::nextToken() {
+    //std::cout<<"**********next token"<<std::endl;
+
+    skipUnrelevant();
+
+    auto c = fileReader.getSign();
+    std::cout<<"c: "<<c<<std::endl;
+    std::cout<<"line: "<<fileReader.getLineNumber()<<std::endl;
+    std::cout<<"pos: "<<fileReader.getCurrentSignPos()<<std::endl;
+
+    unsigned int line = fileReader.getLineNumber();
+    unsigned int posInLine = fileReader.getCurrentSignPos();
+
+    if (c == EOF) { createEndOfFile(line, posInLine); }
+
+    else if (isdigit(c))
+        createDigit(line, posInLine);
+    else if (isalpha(c))
+        createIdentifier(line, posInLine);
+    else createSignToken(line, posInLine);
+
+    std::cout<<"Type: "<<typeNames.at(tokenPtr->type)/*<<" StringValue: "<<tokenPtr->stringValue*/<<" Line: "<<tokenPtr->line<<" Pos in Line: "<<tokenPtr->positionInLine<<std::endl;
+}
+
 
